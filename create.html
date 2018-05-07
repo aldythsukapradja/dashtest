@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<base href="local">
+	<title>Create Connection</title>
+	<link rel="stylesheet" type="text/css" href="css/angular-resizable.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body ng-app="fba-c" ng-controller="connectionController" class="{{os}} create">
+	<form class="form" ng-submit="save()" name="add">
+		<div class="form-group helpers">
+			<div class="columns-10 offset-2-columns">
+				<span class="importer">
+					<button class="button button-light">Import</button>
+					<input type="file" id="file" name="file" onchange="angular.element(this).scope().import(this)" />
+				</span>
+				<button class="button button-plain pull-right" ng-click="goDocs()">Help</button>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="projectID" class="columns-2 control-label">Project ID:</label>
+			<div class="columns-10">
+				<input type="text" class="form-control" id="projectID" placeholder="Eg: myproject-123" ng-model="projectID" required>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="privateKey" class="columns-2 control-label">Private Key:</label>
+			<div class="columns-10">
+				<textarea class="form-control" id="privateKey" placeholder="Eg: -----BEGIN PRIVATE KEY----- your key -----END PRIVATE KEY-----\n" ng-model="privateKey" required></textarea>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="clientEmail" class="columns-2 control-label">Client Email:</label>
+			<div class="columns-10">
+				<input type="text" class="form-control" id="clientEmail" placeholder="Eg: myname@myproject-123.iam.gserviceaccount.com" ng-model="clientEmail" required>
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="db" class="columns-2 control-label">Database URL:</label>
+			<div class="columns-10">
+				<input type="text" class="form-control" id="db" placeholder="Eg: https://myproject-123.firebaseio.com" ng-model="databaseURL" required>
+			</div>
+		</div>
+		<footer class="toolbar toolbar-footer">
+			<div class="toolbar-actions">
+				<button class="button button-primary pull-right" ng-disabled="add.$invalid">Create</button>
+				<a class="button button-light pull-right test" ng-click="test()">Test</a>
+				<div class="loader-wrap pull-right" ng-show="testing"><div class="loader"></div></div>
+				<span class="pull-right message" ng-show="message" ng-class="{'error': error}">{{message}}</span>
+				<a class="button button-light" ng-click="close()">Cancel</a>
+			</div>
+		</footer>
+	</form>
+</body>
+<style type="text/css">
+	body{
+		border-top: 1px solid var(--color-border);
+	}
+	textarea{
+		min-height: 50px;
+		resize: none;
+	}
+	.importer button{
+		position: absolute;
+	}
+	#file{
+		min-height: 30px;
+		opacity: 0; 
+	}
+	.form-group.helpers {
+		margin: -5px 0 5px;
+	}
+	.button-plain{
+		background: none;
+		box-shadow: none;
+		border: 1px solid #ddd;
+	}
+	.button.test, .message{
+		margin-right: 10px;
+	}
+	.message{
+		color: #359c22;
+		font-size: 13px;
+	}
+	.error{
+		color: red;
+	}
+	.loader-wrap{
+		position: relative;
+		margin-right: 50px;
+		margin-top: 20px;
+		zoom: .6;
+	}
+</style>
+<script>
+	const electron = require('electron').remote
+	const ipc = require('electron').ipcRenderer
+	const firebase = require("firebase")
+	const writeFile = require('write-file-atomic')
+	require('electron').webFrame.setZoomLevelLimits(1, 1)
+</script>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/connection.js"></script>
+<script>
+	// You can also require other files to run in this process
+	require('./renderer.js')
+</script>
+</html>

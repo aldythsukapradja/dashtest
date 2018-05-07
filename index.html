@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<base href="local">
+	<title>Firebase Admin</title>
+	<link rel="stylesheet" type="text/css" href="css/angular-resizable.css">
+	<link rel="stylesheet" type="text/css" href="css/codemirror/codemirror.css">
+	<link rel="stylesheet" type="text/css" href="css/ionicons.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script>
+		const electron = require('electron').remote
+		const ipc = require('electron').ipcRenderer
+		const firebase = require("firebase")
+		const writeFile = require('write-file-atomic')
+		const clipboard = electron.clipboard
+		//window.$ = window.jQuery = require('jquery')
+		require('electron').webFrame.setZoomLevelLimits(1, 1)
+	</script>
+</head>
+<body ng-app="fba" ng-controller="mainController" class="{{os}} index">
+	<div id="mainmenu">
+		<div class="titlebar" ng-if="titleBar">Firebase Admin</div>
+		<div class="icons">
+			<div class="icon" ng-click="listShown = true;">
+				<img class="logo" src="img/list.svg">
+				<span>&#9660;</span>
+			</div>
+			<div class="icon" id="create" ng-click="create()" title="Create Connection">
+				<img class="add" src="img/add.svg">
+			</div>
+			<div class="icon" ng-click="menuHidden = !menuHidden" ng-class="{'open': menuHidden}" title="Toggle Sidebar">
+				<img class="toggle" src="img/sidebar.svg">
+			</div>
+			<div class="mode-icons">
+				<div class="icon" ng-class="mode == 'explorer' ? 'active' : ''" ng-click="changeMode('explorer')" title="Object Explorer">
+					Explorer
+				</div>
+				<div class="icon" ng-class="mode == 'query' ? 'active' : ''" ng-click="changeMode('query')" title="Query">
+					Query
+				</div>
+			</div>
+			<div class="icon pull-right" ng-click="goConsole()" title="Firebase Console">
+				<img class="console" src="img/console.svg">
+			</div>
+		</div>
+		<div class="connection-list" ng-show="listShown" ng-click="listShown = false;">
+			<ul>
+				<li ng-repeat="con in config.connections" ng-click="connect(con, $index)" ng-class="{'last': $last}">
+					<div class="name">{{con.serviceAccount.projectId}}</div>
+					<div class="close" ng-click="delete(con)" title="Delete Connection"></div>
+				</li>
+				<li ng-click="create()" class="create-item"><div class="name">Create Connection</div></li>
+			</ul>
+		</div>
+	</div>
+	<div id="adminmenumain" resizable r-directions="['right']" ng-class="{'hidden': menuHidden}">
+		<aside id="admin-menu" class="hidden-print">
+			<div class="menu-filter" ng-if="collections.length">
+				<input type="search" ng-model="m.searchMenu" placeholder="Filter Documents">
+			</div>
+			<ul class="admin-menu-main">
+				<li class="menu-item" ng-repeat="collection in collections | filter:m.searchMenu track by $index" ng-include="'templates/menuTree.html'" ng-class="[collection.open ? 'open': 'closed', {'active': activeUrl == collection.url, 'leaf': collection.leaf}]"></li>
+			</ul>
+		</aside>
+		<div class="menu-overlay" ng-show="menuOverlay"><div class="loader"></div></div>
+	</div>
+	<div class="admin-content">
+		<main id="main" ng-view></main>
+	</div>
+	<div id="notice" ng-show="showNotice" ng-include="'templates/notice.html'"></div>
+</body>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/angular-route.min.js"></script>
+<script type="text/javascript" src="js/angular-resizable.min.js"></script>
+<script type="text/javascript" src="js/codemirror/codemirror.js"></script>
+<script type="text/javascript" src="js/codemirror/foldcode.js"></script>
+<script type="text/javascript" src="js/codemirror/foldgutter.js"></script>
+<script type="text/javascript" src="js/codemirror/brace-fold.js"></script>
+<script type="text/javascript" src="js/codemirror/javascript.js"></script>
+<script type="text/javascript" src="js/codemirror/searchcursor.js"></script>
+<script type="text/javascript" src="js/codemirror/matchbrackets.js"></script>
+<script type="text/javascript" src="js/codemirror/ui-codemirror.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/routes.js"></script>
+<script>
+	// You can also require other files to run in this process
+	require('./renderer.js')
+</script>
+</html>
